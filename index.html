@@ -1,0 +1,904 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Vegetify connects local growers with fresh produce shoppers."
+    />
+    <title>Vegetify — Fresh Produce, Made Simple</title>
+    <link rel="icon" href="./public/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="./styles.css" />
+    <script src="./script.js" defer></script>
+  </head>
+  <body>
+    <div id="app"></div>
+    <!--
+      View templates stay in HTML so page structure is easy to inspect.
+      The script fills {{placeholders}} in templates named "view-*".
+    -->
+    <template id="view-product-image"
+      ><div class="product-image {{className}}">{{content}}</div></template
+    >
+    <template id="view-brand"
+      ><div class="brand">
+        <span class="brand-mark">▼</span><i></i>Vegetify
+      </div></template
+    >
+    <template id="view-header"
+      ><header class="page-header">
+        <div>
+          <small>{{eyebrow}}</small>
+          <h1>{{title}}</h1>
+          <p>{{subtitle}}</p>
+        </div>
+        {{action}}
+      </header></template
+    >
+    <template id="view-status"
+      ><em class="status {{className}}">{{status}}</em></template
+    >
+    <template id="view-stock"
+      ><em class="stock {{className}}">{{label}}</em></template
+    >
+    <template id="view-stat"
+      ><article class="stat">
+        <div>
+          <span>{{label}}</span><strong>{{value}}</strong
+          ><small>{{note}}</small>
+        </div>
+        {{icon}}
+      </article></template
+    >
+    <template id="view-login"
+      ><main class="login">
+        <section class="login-visual">
+          {{brand}}
+          <blockquote>
+            "Freshness is not an<br />option. It's our absolute<br />promise."<small
+              >— Vegetify Supply Chain Network</small
+            >
+          </blockquote>
+        </section>
+        <section class="login-form">
+          <form class="card" data-form="login">
+            <h1>Welcome</h1>
+            <p>Sign in to your Vegetify account</p>
+            {{message}}<label
+              >Email or username<input
+                name="identifier"
+                autocomplete="username"
+                placeholder="Enter your email or username"
+                required /></label
+            ><label
+              >Password
+              <div class="password">
+                <input
+                  name="password"
+                  type="password"
+                  autocomplete="current-password"
+                  placeholder="Enter your password"
+                  required
+                />{{passwordToggle}}
+              </div></label
+            >
+            <div class="login-options">
+              <label
+                ><input type="checkbox" name="remember" /> Remember me</label
+              >
+            </div>
+            <p class="form-error" data-error></p>
+            <button class="primary">Log in</button
+            ><button class="auth-switch" type="button" data-action="register">
+              Don't have an account? <strong>Register here</strong></button
+            ><small class="demo-note"
+              >Admin demo: username <b>admin</b> · password
+              <b>Admin123!</b></small
+            >
+          </form>
+        </section>
+      </main></template
+    >
+    <template id="view-register"
+      ><main class="login">
+        <section class="login-visual register-visual">
+          {{brand}}
+          <blockquote>
+            Shop fresh. Eat well.<br />Support local growers.<small
+              >Fresh produce, made simple.</small
+            >
+          </blockquote>
+        </section>
+        <section class="login-form register-form">
+          <form class="card" data-form="register">
+            <h1>Create your account</h1>
+            <p>Join Vegetify and start shopping fresh</p>
+            <div class="register-grid">
+              <label class="wide"
+                >Full name<input
+                  name="fullName"
+                  autocomplete="name"
+                  required /></label
+              ><label
+                >Username<input
+                  name="username"
+                  autocomplete="username"
+                  required /></label
+              ><label
+                >Email address<input
+                  name="email"
+                  type="email"
+                  autocomplete="email"
+                  required /></label
+              ><label
+                >Password
+                <div class="password">
+                  <input
+                    name="password"
+                    type="password"
+                    autocomplete="new-password"
+                    required
+                  />{{passwordToggle}}
+                </div></label
+              ><label
+                >Confirm password
+                <div class="password">
+                  <input
+                    name="confirmPassword"
+                    type="password"
+                    autocomplete="new-password"
+                    required
+                  />{{passwordToggle}}
+                </div></label
+              >
+            </div>
+            <p class="form-error" data-error></p>
+            <button class="primary">Register</button
+            ><button class="auth-switch" type="button" data-action="login">
+              Already have an account? <strong>Log in</strong>
+            </button>
+          </form>
+        </section>
+      </main></template
+    >
+    <template id="view-password-toggle"
+      ><button
+        type="button"
+        data-action="toggle-password"
+        aria-label="Show password"
+        aria-pressed="false"
+      >
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <path d="M2.2 12s3.5-6 9.8-6 9.8 6 9.8 6-3.5 6-9.8 6-9.8-6-9.8-6Z" />
+          <circle cx="12" cy="12" r="2.8" />
+          <path class="eye-slash" d="m4 4 16 16" />
+        </svg></button
+    ></template>
+    <!-- Admin pages -->
+    <template id="view-admin-shell"
+      ><div class="app">
+        <aside class="sidebar {{openClass}}">
+          {{brand}}
+          <nav>{{nav}}</nav>
+          <div class="profile">
+            <div class="profile-row">
+              <b>MK</b
+              ><span
+                ><strong>Mang Kanor</strong><small>Supply Admin</small></span
+              >
+            </div>
+            <button data-action="logout"><span>↗</span> Sign out</button>
+          </div>
+        </aside>
+        <button
+          class="menu-button"
+          data-action="menu"
+          aria-label="Toggle navigation"
+        >
+          ☰
+        </button>
+        <main class="content">{{content}}</main>
+      </div>
+      {{modal}}</template
+    >
+    <template id="view-admin-nav"
+      ><button class="{{activeClass}}" data-page="{{page}}">
+        <span aria-hidden="true">{{icon}}</span><span>{{page}}</span>
+      </button></template
+    >
+    <template id="view-dashboard"
+      ><div class="stats">{{stats}}</div>
+      <div class="dashboard-grid">
+        <section>
+          <div class="section-title">
+            <h2>Recent Order Activity</h2>
+            <button data-page="Orders">See all orders</button>
+          </div>
+          <div class="card order-activity">{{recent}}</div>
+        </section>
+        <section>
+          <div class="section-title"><h2>Control Centre</h2></div>
+          <div class="control-list">
+            <button data-action="add-product">
+              <i>＋</i
+              ><span
+                ><strong>Add Product</strong
+                ><small>Create a catalogue item</small></span
+              ><b>›</b></button
+            ><button data-page="Inventory">
+              <i>⚠</i
+              ><span
+                ><strong>Restock Alert</strong
+                ><small>{{low}} items need attention</small></span
+              ><b>›</b></button
+            ><button data-page="Orders">
+              <i>▣</i
+              ><span
+                ><strong>Review Orders</strong
+                ><small>Update fulfilment status</small></span
+              ><b>›</b>
+            </button>
+          </div>
+        </section>
+      </div></template
+    >
+    <template id="view-inventory"
+      ><div class="filters">
+        <input
+          data-filter="query"
+          placeholder="Search products..."
+          value="{{query}}"
+        /><select data-filter="category">
+          {{categories}}
+        </select>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>PRODUCT</th>
+              <th>CATEGORY</th>
+              <th>PRICE</th>
+              <th>STOCK</th>
+              <th>STATUS</th>
+              <th>ACTIONS</th>
+            </tr>
+          </thead>
+          <tbody>
+            {{rows}}
+          </tbody>
+        </table>
+        {{empty}}
+      </div></template
+    >
+    <template id="view-orders"
+      ><div class="filters">
+        <input
+          data-filter="query"
+          placeholder="Search by order or customer..."
+          value="{{query}}"
+        /><select data-filter="status">
+          {{statuses}}
+        </select>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>ORDER</th>
+              <th>CUSTOMER</th>
+              <th>ITEMS</th>
+              <th>DATE</th>
+              <th>TOTAL</th>
+              <th>PAYMENT</th>
+              <th>STATUS</th>
+            </tr>
+          </thead>
+          <tbody>
+            {{rows}}
+          </tbody>
+        </table>
+        {{empty}}
+      </div></template
+    >
+    <template id="view-customers"
+      ><div class="filters single">
+        <input
+          data-filter="query"
+          placeholder="Search customers..."
+          value="{{query}}"
+        />
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>CUSTOMER</th>
+              <th>CONTACT</th>
+              <th>ORDERS</th>
+              <th>SPEND</th>
+              <th>ACTIONS</th>
+            </tr>
+          </thead>
+          <tbody>
+            {{rows}}
+          </tbody>
+        </table>
+        {{empty}}
+      </div></template
+    >
+    <template id="view-reports"
+      ><div class="stats reports">{{stats}}</div>
+      <div class="reports-grid">
+        <div class="card chart-card">
+          <h2>Sales performance</h2>
+          <p>Customer order sales over the last 7 days</p>
+          <div class="bars">{{bars}}</div>
+        </div>
+        <div class="card top-products">
+          <h2>Top products</h2>
+          {{products}}
+        </div>
+      </div></template
+    >
+    <template id="view-report-bar"
+      ><div title="{{title}}">
+        <i style="{{style}}"></i><span>{{label}}</span>
+      </div></template
+    >
+    <template id="view-report-product"
+      ><div>
+        <b>{{rank}}</b><strong>{{name}}</strong><span>{{sales}}</span>
+      </div></template
+    >
+    <template id="view-settings"
+      ><div class="settings-grid">
+        <form class="card settings-card" data-form="settings">
+          <h2>Business details</h2>
+          <label
+            >Store name<input
+              name="storeName"
+              value="{{storeName}}"
+              required /></label
+          ><label
+            >Display currency<select name="currency">
+              <option>Philippine Peso (PHP)</option>
+            </select></label
+          ><label
+            >Low-stock threshold<input
+              name="lowStock"
+              type="number"
+              min="1"
+              value="{{lowStock}}"
+              required /></label
+          ><button class="primary">Save preferences</button>
+        </form>
+        <div class="card settings-card notifications">
+          <h2>Notifications</h2>
+          <label
+            ><span
+              ><strong>Order alerts</strong
+              ><small>Notify when a new order is placed</small></span
+            ><input
+              type="checkbox"
+              data-setting="orderAlerts"
+              {{orderAlerts}} /></label
+          ><label
+            ><span
+              ><strong>Low-stock alerts</strong
+              ><small>Warn when stock reaches the threshold</small></span
+            ><input type="checkbox" data-setting="stockAlerts" {{stockAlerts}}
+          /></label>
+        </div></div
+    ></template>
+    <!-- Storefront and customer pages -->
+    <template id="view-store"
+      >{{preview}}
+      <div class="pills">{{categories}}</div>
+      <div class="product-grid">{{products}}</div>
+      {{empty}}</template
+    >
+    <template id="view-store-category"
+      ><button class="{{activeClass}}" data-category="{{category}}">
+        {{category}}
+      </button></template
+    >
+    <template id="view-product-card"
+      ><article class="product-card">
+        <div class="{{soldClass}}">{{image}}{{soldLabel}}</div>
+        <div class="product-info">
+          <h3>{{name}}</h3>
+          <p>{{description}}</p>
+          <p><b>{{price}}</b> / kg</p>
+          <small class="stock-count {{stockClass}}"
+            >{{remaining}} kg available</small
+          >
+          <div class="product-actions">
+            <button data-action="add-cart" data-id="{{id}}" {{disabled}}>
+              Add to cart</button
+            ><button data-action="product-detail" data-id="{{id}}">
+              View details
+            </button>
+          </div>
+        </div>
+      </article></template
+    >
+    <template id="view-preview-note"
+      ><div class="preview-note">
+        <span>This is a preview of the customer storefront.</span
+        ><button data-page="Inventory">Manage products</button>
+      </div></template
+    >
+    <template id="view-user-shell"
+      ><div class="app user-app {{darkClass}}">
+        <aside class="sidebar user-sidebar {{openClass}}">
+          {{brand}}
+          <nav>{{nav}}</nav>
+          <div class="profile">
+            <div class="profile-row">
+              <b>{{initials}}</b
+              ><span
+                ><strong>{{name}}</strong><small>Vegetify customer</small></span
+              >
+            </div>
+            <button data-action="toggle-theme">
+              <span>{{themeIcon}}</span>{{themeLabel}}</button
+            ><button data-action="logout"><span>↗</span> Sign out</button>
+          </div>
+        </aside>
+        <button
+          class="menu-button"
+          data-action="menu"
+          aria-label="Toggle navigation"
+        >
+          ☰
+        </button>
+        <main class="content">{{content}}</main>
+        {{modal}}
+      </div></template
+    >
+    <template id="view-user-nav"
+      ><button class="{{activeClass}}" data-user-page="{{page}}">
+        <span>{{icon}}</span><span>{{page}}</span>
+      </button></template
+    >
+    <template id="view-user-home"
+      ><section class="card user-welcome">
+        <div>
+          <small>FRESH FROM LOCAL GROWERS</small>
+          <h2>Welcome, {{name}}!</h2>
+          <p>
+            Shop fresh local produce, follow your orders, and support the
+            growers in your community.
+          </p>
+          <button class="primary" data-user-page="Shop">Start shopping</button>
+        </div>
+      </section>
+      <div class="stats user-stats">{{stats}}</div>
+      <div class="section-title user-orders-title">
+        <h2>Recent orders</h2>
+        {{viewAll}}
+      </div>
+      {{orders}}</template
+    >
+    <template id="view-user-order-list"
+      ><div class="user-order-list">{{orders}}</div></template
+    >
+    <template id="view-user-order-empty"
+      ><div class="card user-orders-empty">
+        <i>▣</i>
+        <h2>No orders yet</h2>
+        <p>Your completed demo checkouts will appear here with their status.</p>
+        <button class="primary" data-user-page="Shop">Start shopping</button>
+      </div></template
+    >
+    <template id="view-user-order"
+      ><article class="card user-order-card">
+        <div class="user-order-head">
+          <div><small>ORDER #{{id}}</small><strong>{{date}}</strong></div>
+          <div class="user-order-tools">
+            <button data-action="receipt" data-id="{{id}}">▤ Receipt</button
+            >{{status}}
+          </div>
+        </div>
+        <div class="user-order-items">{{items}}</div>
+        <div class="user-order-total">
+          <span><small>Payment</small><strong>{{payment}}</strong></span
+          ><span><small>Total</small><strong>{{total}}</strong></span>
+        </div>
+      </article></template
+    >
+    <template id="view-user-order-item"
+      ><div>
+        <span><strong>{{name}}</strong><small>{{price}} per kg</small></span
+        ><b>{{quantity}} kg</b><strong>{{total}}</strong>
+      </div></template
+    >
+    <!-- Receipt and dialog templates -->
+    <template id="view-receipt"
+      ><div class="overlay" data-action="close-overlay">
+        <section class="modal receipt-modal">
+          <div class="receipt-heading">
+            <div class="brand receipt-brand">
+              <span class="brand-mark">▼</span><i></i>Vegetify
+            </div>
+            <button
+              class="modal-x"
+              data-action="close-modal"
+              aria-label="Close receipt"
+            >
+              ×
+            </button>
+          </div>
+          <div class="receipt-title">
+            <small>ORDER RECEIPT</small>
+            <h2>#{{id}}</h2>
+            {{status}}
+          </div>
+          <dl class="receipt-meta">
+            <div>
+              <dt>Customer</dt>
+              <dd>{{customer}}</dd>
+            </div>
+            <div>
+              <dt>Date</dt>
+              <dd>{{date}}</dd>
+            </div>
+            <div>
+              <dt>Payment</dt>
+              <dd>{{payment}}</dd>
+            </div>
+          </dl>
+          <div class="receipt-items">{{items}}</div>
+          <div class="receipt-total">
+            <span>Total</span><strong>{{total}}</strong>
+          </div>
+          <button class="primary receipt-print" data-action="print-receipt">
+            Print receipt
+          </button>
+        </section>
+      </div></template
+    >
+    <template id="view-receipt-item"
+      ><div>
+        <span
+          ><strong>{{name}}</strong
+          ><small>{{quantity}} kg × {{price}}</small></span
+        ><strong>{{total}}</strong>
+      </div></template
+    >
+    <template id="view-detail"
+      ><div class="overlay" data-action="close-overlay">
+        <section class="modal detail-modal">
+          {{image}}
+          <div>
+            <button class="modal-x" data-action="close-modal">×</button
+            ><small>{{category}}</small>
+            <h2>{{name}}</h2>
+            <strong>{{price}} / kg</strong>
+            <p>{{description}}</p>
+            <p>{{stock}} kg available</p>
+            <div class="detail-cart-actions">
+              <button class="primary" data-action="add-cart" data-id="{{id}}">
+                Add to cart</button
+              ><button class="secondary" data-action="cart">View cart</button>
+            </div>
+          </div>
+        </section>
+      </div></template
+    >
+    <template id="view-customer-detail"
+      ><div class="overlay" data-action="close-overlay">
+        <section class="modal small-modal customer-detail">
+          <button class="modal-x" data-action="close-modal">×</button>
+          <div>{{initials}}</div>
+          <h2>{{name}}</h2>
+          <p>@{{username}}</p>
+          <p>{{email}}</p>
+          <div class="customer-order-mini">
+            <h4>Order history ({{count}})</h4>
+            {{orders}}
+          </div>
+          <div class="modal-actions">
+            <button class="secondary" data-action="close-modal">Close</button>
+          </div>
+        </section>
+      </div></template
+    >
+    <template id="view-customer-order"
+      ><div>
+        <span><strong>#{{id}}</strong><small>{{date}}</small></span
+        ><span>{{status}}<strong>{{total}}</strong></span>
+      </div></template
+    >
+    <template id="view-product-modal"
+      ><div class="overlay" data-action="close-overlay">
+        <form class="modal product-modal" data-form="product" data-id="{{id}}">
+          <div class="modal-head">
+            <div>
+              <small>CATALOGUE ITEM</small>
+              <h2>{{title}}</h2>
+            </div>
+            <button type="button" data-action="close-modal" aria-label="Close">
+              ×
+            </button>
+          </div>
+          <div class="form-grid">
+            <label
+              >Product name<input
+                name="name"
+                value="{{name}}"
+                required /></label
+            ><label
+              >Category<select name="category">
+                {{categories}}
+              </select></label
+            ><label
+              >Price per kg<input
+                name="price"
+                type="number"
+                min="0"
+                step=".01"
+                value="{{price}}"
+                required /></label
+            ><label
+              >Stock quantity<input
+                name="stock"
+                type="number"
+                min="0"
+                step="1"
+                value="{{stock}}"
+                required /></label
+            ><label class="wide"
+              >Description<textarea name="description">
+{{description}}</textarea
+              ></label
+            ><label class="wide image-upload"
+              >Product image
+              <div class="upload-row">
+                {{image}}
+                <div>
+                  <input
+                    name="image"
+                    type="file"
+                    accept=".jpg,.jpeg,.png,.webp"
+                  /><small>JPG, PNG or WEBP, up to 5 MB.</small>
+                </div>
+              </div></label
+            ><label class="check wide"
+              ><input name="available" type="checkbox" {{available}} />
+              Available in store</label
+            >
+          </div>
+          <p class="form-error" data-error></p>
+          <div class="modal-actions">
+            <button type="button" class="secondary" data-action="close-modal">
+              Cancel</button
+            ><button class="primary">Save product</button>
+          </div>
+        </form>
+      </div></template
+    >
+    <template id="view-cart"
+      ><div class="overlay" data-action="close-overlay">
+        <section class="cart-panel">
+          <div class="modal-head">
+            <div>
+              <small>YOUR ORDER</small>
+              <h2>Shopping cart</h2>
+            </div>
+            <button data-action="close-modal" aria-label="Close">×</button>
+          </div>
+          <div class="cart-items">{{items}}</div>
+          <div class="cart-total">
+            <span>Total</span><strong>{{total}}</strong>
+          </div>
+          <label
+            >Customer name<input
+              name="checkout-name"
+              placeholder="Enter your name"
+              value="{{customerName}}"
+              {{readOnly}} /></label
+          >{{accountNote}}
+          <fieldset class="payment-options">
+            <legend>Payment method</legend>
+            <label class="selected"
+              ><input
+                type="radio"
+                name="payment-method"
+                value="Cash on Delivery"
+                checked
+              /><span
+                ><strong>Cash on Delivery</strong
+                ><small>Pay in cash when your order arrives.</small></span
+              ></label
+            ><label
+              ><input
+                type="radio"
+                name="payment-method"
+                value="E-wallet"
+              /><span
+                ><strong>E-wallet</strong
+                ><small
+                  >Demo selection only; no payment is processed.</small
+                ></span
+              ></label
+            >
+          </fieldset>
+          <button class="primary checkout" data-action="checkout" {{disabled}}>
+            Place demo order</button
+          ><small class="demo-note"
+            >No payment is processed in this local demonstration.</small
+          >
+        </section>
+      </div></template
+    >
+    <template id="view-cart-item"
+      ><div>
+        {{image}}<span
+          ><strong>{{name}}</strong><small>{{price}} / kg</small></span
+        >
+        <div class="quantity">
+          <button
+            type="button"
+            data-action="quantity"
+            data-id="{{id}}"
+            data-amount="-1"
+          >
+            −</button
+          ><b>{{quantity}} kg</b
+          ><button
+            type="button"
+            data-action="quantity"
+            data-id="{{id}}"
+            data-amount="1"
+            {{disabled}}
+          >
+            +
+          </button>
+        </div>
+      </div></template
+    >
+    <!-- Small reusable pieces used by the page templates -->
+    <template id="view-image-fallback"><span>{{name}}</span></template>
+    <template id="view-image-saved"
+      ><span
+        data-image-id="{{id}}"
+        data-image-name="{{name}}"
+        data-image-fallback="{{fallback}}"
+        >{{initial}}</span
+      ></template
+    >
+    <template id="view-image-remote"
+      ><img src="{{src}}" alt="{{name}}"
+    /></template>
+    <template id="view-stat-icon"><i>{{icon}}</i></template>
+    <template id="view-form-success"
+      ><p class="form-success">{{message}}</p></template
+    >
+    <template id="view-dashboard-row"
+      ><div>
+        <strong>#{{id}}</strong><span>{{customer}}</span><span>{{items}}</span
+        ><b>{{total}}</b>{{status}}
+      </div></template
+    >
+    <template id="view-empty"><div class="empty">{{message}}</div></template>
+    <template id="view-inventory-row"
+      ><tr>
+        <td>
+          <div class="product-cell">
+            {{image}}<span
+              ><strong>{{name}}</strong><small>ID #{{shortId}}</small></span
+            >
+          </div>
+        </td>
+        <td>{{category}}</td>
+        <td>{{price}} / kg</td>
+        <td><strong class="{{stockClass}}">{{stock}} kg</strong></td>
+        <td>{{status}}</td>
+        <td>
+          <button class="tiny edit" data-action="edit-product" data-id="{{id}}">
+            Edit</button
+          ><button
+            class="tiny delete"
+            data-action="delete-product"
+            data-id="{{id}}"
+          >
+            Delete
+          </button>
+        </td>
+      </tr></template
+    >
+    <template id="view-option"
+      ><option {{selected}}>{{label}}</option></template
+    >
+    <template id="view-order-row"
+      ><tr>
+        <td><strong>#{{id}}</strong></td>
+        <td>
+          <span class="order-customer"
+            ><strong>{{customer}}</strong>{{registered}}</span
+          >
+        </td>
+        <td>{{items}}</td>
+        <td>{{date}}</td>
+        <td>{{total}}</td>
+        <td><span class="payment-method">{{payment}}</span></td>
+        <td>
+          <select class="status-select" data-order-status="{{id}}">
+            {{statuses}}
+          </select>
+        </td>
+      </tr></template
+    >
+    <template id="view-customer-row"
+      ><tr>
+        <td>
+          <div class="customer">
+            <b>{{initials}}</b
+            ><span><strong>{{name}}</strong><small>@{{username}}</small></span>
+          </div>
+        </td>
+        <td>{{email}}</td>
+        <td>{{orders}}</td>
+        <td>{{spend}}</td>
+        <td>
+          <button
+            class="tiny edit"
+            data-action="customer-details"
+            data-id="{{id}}"
+          >
+            View details
+          </button>
+        </td>
+      </tr></template
+    >
+    <template id="view-store-search"
+      ><div class="store-search">
+        <input
+          data-filter="query"
+          placeholder="Search produce..."
+          value="{{query}}"
+        /><button class="primary cart-button" data-action="cart">
+          Cart <b>{{cartCount}}</b>
+        </button>
+      </div></template
+    >
+    <template id="view-notification-button"
+      ><button
+        class="round"
+        data-action="notifications"
+        aria-label="Notifications"
+      >
+        ♧
+      </button></template
+    >
+    <template id="view-add-product-button"
+      ><button class="primary" data-action="add-product">
+        ＋ Add product
+      </button></template
+    >
+    <template id="view-shop-again-button"
+      ><button class="primary" data-user-page="Shop">
+        🛒 Shop again
+      </button></template
+    >
+    <template id="view-user-view-all"
+      ><button data-user-page="Orders">View all</button></template
+    >
+    <template id="view-cart-empty"
+      ><div class="empty">Your cart is empty.</div></template
+    >
+    <template id="view-account-note"
+      ><small class="account-order-note"
+        >This order will be linked to your Vegetify account.</small
+      ></template
+    >
+    <template id="view-no-orders"><p>No orders yet.</p></template>
+    <template id="view-sold-label"><strong>Out of stock</strong></template>
+    <template id="view-registered-customer"
+      ><small>Registered customer</small></template
+    >
+  </body>
+</html>
